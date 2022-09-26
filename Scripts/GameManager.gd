@@ -23,12 +23,15 @@ var grid_blocks
 var grid_x = 10
 var grid_y = 20
 var level = 0
+var lines_cleared = 0
 var gameover = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	points = 0
-	level = 0
+	points = 50
+	level = 1
+	refresh_level_label()
+	print("speed ", set_new_gravity())
 	gen_grid_array()
 	rng.randomize()
 	gen_shape_bag()
@@ -39,10 +42,10 @@ func _process(delta):
 
 func gen_grid_array():
 	var matrix = []
-	for x in range(grid_x):
+	for _x in range(grid_x):
 		matrix.append([])
-		for y in range(grid_y):
-			matrix[x].append(null)
+		for _y in range(grid_y):
+			matrix[_x].append(null)
 	grid_blocks = matrix
 
 func tick():
@@ -98,6 +101,7 @@ func remove_shape():
 	self.remove_child(cur_shape)
 	remove_ghosts()
 	verify_full_rows()
+	verify_level_up()
 	
 func grid_cell_is_taken(x, y):
 	x = x / cur_shape.cellsize - grid_offset.x
@@ -110,11 +114,12 @@ func verify_full_rows():
 	var rows_to_remove = []
 	for y in range(grid_y-1,0,-1):
 		if verify_full_row(y):
+			lines_cleared += 1
+			print(lines_cleared)
 			rows_to_remove.append(y)
 	remove_rows(rows_to_remove)
 	
 	if rows_to_remove.size() != 0:
-		print(get_consecutive_lines(rows_to_remove))
 		get_points_lines(get_consecutive_lines(rows_to_remove))
 
 func get_consecutive_lines(rows):
@@ -127,12 +132,12 @@ func get_consecutive_lines(rows):
 	return consecutive + 2
 
 func get_points_lines(lines):
-	var points = 0
+	var new_points = 0
 	if lines == 1: points = 40
 	elif lines == 2: points = 100
 	elif lines == 3: points = 300
 	elif lines == 4: points = 1200
-	add_points(points*(level + 1))
+	add_points(new_points*(level + 1))
 
 func remove_rows(rows_to_remove):
 	var coeff = 0
@@ -213,6 +218,20 @@ func _on_hold_shape():
 		
 		can_hold_shape = false
 		refresh_hold_shape()
+
+func verify_level_up():
+	if lines_cleared == 10:
+		level += 1
+		lines_cleared = 0
+		refresh_level_label()
+		set_new_gravity()
+
+func refresh_level_label():
+	self.get_node("Level").text = str(level)
+
+func set_new_gravity():
+	var speed = pow(0.8 - ((level -1) * 0.007), level-1)
+	self.get_node("TickSpeed").wait_time = speed
 
 func _on_TickSpeed_timeout():
 	cur_shape.tick_down()
