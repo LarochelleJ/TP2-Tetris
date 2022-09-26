@@ -5,7 +5,7 @@
 [ext_resource path="res://fonts/PublicPixel-z84yD.ttf" type="DynamicFontData" id=3]
 
 [sub_resource type="DynamicFont" id=1]
-size = 30
+size = 25
 font_data = ExtResource( 3 )
 
 [node name="TetrisGame" type="Node2D"]

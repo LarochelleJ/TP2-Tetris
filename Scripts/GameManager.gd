@@ -28,7 +28,7 @@ var gameover = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	points = 50
+	points = 0
 	level = 1
 	refresh_level_label()
 	print("speed ", set_new_gravity())
@@ -133,10 +133,10 @@ func get_consecutive_lines(rows):
 
 func get_points_lines(lines):
 	var new_points = 0
-	if lines == 1: points = 40
-	elif lines == 2: points = 100
-	elif lines == 3: points = 300
-	elif lines == 4: points = 1200
+	if lines == 1: new_points = 40
+	elif lines == 2: new_points = 100
+	elif lines == 3: new_points = 300
+	elif lines == 4: new_points = 1200
 	add_points(new_points*(level + 1))
 
 func remove_rows(rows_to_remove):
