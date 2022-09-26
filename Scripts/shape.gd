@@ -2,6 +2,7 @@ extends Node
 
 class_name ShapeX
 
+var type
 var rotation_matrix = []
 var prev_rotation
 var rotation_index = 0

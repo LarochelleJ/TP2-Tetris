@@ -7,3 +7,4 @@ func _ready():
 		[Vector2(40,80), Vector2(40,40), Vector2(40,0), Vector2(0,0)],
 		[Vector2(0,40), Vector2(40,40), Vector2(80,40), Vector2(80,0)]
 	]
+	type = 2

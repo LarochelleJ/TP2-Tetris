@@ -16,7 +16,7 @@ var grid_offset:Vector2 = Vector2(10,2)
 var rng = RandomNumberGenerator.new()
 var shape_bag = []
 var shape_bag_index = 0
-var hold_shape = null
+var hold_shape = 0 
 var can_hold_shape = true
 var cur_shape
 var grid_blocks
@@ -32,7 +32,7 @@ func _ready():
 	gen_grid_array()
 	rng.randomize()
 	gen_shape_bag()
-	spawn_shape()
+	spawn_shape(false)
 
 func _process(delta):
 	pass
@@ -55,8 +55,14 @@ func gen_shape_bag():
 		if !shape_bag.has(random): 
 			shape_bag.append(random)
 
-func spawn_shape():
-	var blockpath = blocksPath[shape_bag[shape_bag_index]]
+func spawn_shape(shape_type):
+	can_hold_shape = true;
+	var blockpath
+	if !shape_type:
+		blockpath = blocksPath[shape_bag[shape_bag_index]]
+	else:
+		blockpath = blocksPath[shape_type]
+
 	shape_bag_index += 1
 	if shape_bag_index == shape_bag.size():
 		shape_bag_index = 0
@@ -86,7 +92,7 @@ func _on_shape_stopped():
 		self.get_node("Blocks").add_child(block)
 	remove_shape()
 	if !gameover:
-		spawn_shape()
+		spawn_shape(false)
 	
 func remove_shape():
 	self.remove_child(cur_shape)
@@ -188,23 +194,25 @@ func add_points(points_to_add):
 
 func refresh_hold_shape():
 	self.get_node("Hold").remove_child(self.get_node("Hold").get_child(0))
-	var shape = load(blocksPath[shape_bag[shape_bag_index]]).instance()
+	var shape = load(blocksPath[hold_shape]).instance()
 	shape.set_script(null)
-	set_display_offset(shape, shape_bag[shape_bag_index])
+	set_display_offset(shape, hold_shape)
 	self.get_node("Hold").add_child(shape)
 
 func _on_hold_shape():
 	if can_hold_shape:
-		if hold_shape != null:
-			cur_shape = hold_shape 
+		if hold_shape != 0:
+			var cur_shape_type_id = cur_shape.type
+			remove_shape()
+			spawn_shape(hold_shape)
+			hold_shape = cur_shape_type_id
 		else:
-			hold_shape = cur_shape
+			hold_shape = cur_shape.type
+			remove_shape()
+			spawn_shape(false)
 		
 		can_hold_shape = false
-		remove_shape()
 		refresh_hold_shape()
-		spawn_shape()
-			
 
 func _on_TickSpeed_timeout():
 	cur_shape.tick_down()
