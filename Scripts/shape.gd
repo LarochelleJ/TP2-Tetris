@@ -9,6 +9,9 @@ var rotation_index = 0
 var start_pos
 
 const cellsize = 40
+const _lock_delay = 3 # Number of tick allowed before detecting collision (lock_delay)
+var lock_delay = _lock_delay # Counter for said lock_delay
+
 var timer:float = 0
 var hold_delay:float = 0.6
 var hold_timer:float = 0
@@ -158,13 +161,19 @@ func down():
 		next_positions.append(newPos)
 		_i += 1
 
-	if !is_out_of_grid(get_shape_boundairies(next_positions)) && !is_colliding(next_positions):
-		_i = 0
-		for block in self.get_children():
-			var newPos = block.transform.origin + Vector2.DOWN*cellsize
-			block.transform.origin = newPos
-			_i += 1
-		move_ghost()
+	if !is_out_of_grid(get_shape_boundairies(next_positions)):
+		if !is_colliding(next_positions):
+			_i = 0
+			for block in self.get_children():
+				var newPos = block.transform.origin + Vector2.DOWN*cellsize
+				block.transform.origin = newPos
+				_i += 1
+			move_ghost()
+		elif lock_delay != 0:
+			lock_delay -= 1
+		elif lock_delay == 0:
+			lock_delay = _lock_delay
+			emit_signal("shape_stopped")
 	else:
 		emit_signal("shape_stopped")
 
@@ -186,8 +195,6 @@ func slide_down(delta):
 				block.transform.origin = newPos
 				_i += 1
 			downtimer = 0
-		else:
-			emit_signal("shape_stopped")
 	move_ghost()
 
 func set_pos(offset):
