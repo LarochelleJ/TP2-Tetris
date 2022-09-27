@@ -61,15 +61,14 @@ func gen_shape_bag():
 func spawn_shape(shape_type):
 	can_hold_shape = true;
 	var blockpath
-	if !shape_type:
+	if !shape_type: # If no shape_type is specified, we use one from our generated bag
 		blockpath = blocksPath[shape_bag[shape_bag_index]]
+		shape_bag_index += 1
+		if shape_bag_index == shape_bag.size():
+			shape_bag_index = 0
+			gen_shape_bag()
 	else:
 		blockpath = blocksPath[shape_type]
-
-	shape_bag_index += 1
-	if shape_bag_index == shape_bag.size():
-		shape_bag_index = 0
-		gen_shape_bag()
 
 	var shape = load(blockpath).instance()
 	cur_shape = shape
@@ -115,7 +114,7 @@ func verify_full_rows():
 	for y in range(grid_y-1,0,-1):
 		if verify_full_row(y):
 			lines_cleared += 1
-			print(lines_cleared)
+			print("Lines cleared ", lines_cleared)
 			rows_to_remove.append(y)
 	remove_rows(rows_to_remove)
 	
@@ -220,9 +219,9 @@ func _on_hold_shape():
 		refresh_hold_shape()
 
 func verify_level_up():
-	if lines_cleared == 10:
+	if lines_cleared >= 10:
 		level += 1
-		lines_cleared = 0
+		lines_cleared = lines_cleared - 10
 		refresh_level_label()
 		set_new_gravity()
 
