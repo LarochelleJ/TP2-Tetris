@@ -16,7 +16,7 @@ var grid_offset:Vector2 = Vector2(10,2)
 var rng = RandomNumberGenerator.new()
 var shape_bag = []
 var shape_bag_index = 0
-var hold_shape = 0 
+var hold_shape = -1
 var can_hold_shape = true
 var cur_shape
 var grid_blocks
@@ -61,7 +61,7 @@ func gen_shape_bag():
 func spawn_shape(shape_type):
 	can_hold_shape = true;
 	var blockpath
-	if !shape_type: # If no shape_type is specified, we use one from our generated bag
+	if !shape_type && typeof(shape_type) == TYPE_BOOL: # If no shape_type is specified, we use one from our generated bag
 		blockpath = blocksPath[shape_bag[shape_bag_index]]
 		shape_bag_index += 1
 		if shape_bag_index == shape_bag.size():
@@ -206,7 +206,7 @@ func refresh_hold_shape():
 
 func _on_hold_shape():
 	if can_hold_shape:
-		if hold_shape != 0:
+		if hold_shape != -1:
 			var cur_shape_type_id = cur_shape.type
 			remove_shape()
 			spawn_shape(hold_shape)
