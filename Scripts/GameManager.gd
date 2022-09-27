@@ -233,5 +233,8 @@ func set_new_gravity():
 	var speed = pow(0.8 - ((level -1) * 0.007), level-1)
 	self.get_node("TickSpeed").wait_time = speed
 
+func get_timer_time():
+	return self.get_node("TickSpeed").wait_time;
+
 func _on_TickSpeed_timeout():
 	cur_shape.tick_down()
