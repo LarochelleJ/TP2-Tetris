@@ -93,6 +93,7 @@ func _on_shape_stopped():
 		grid_blocks[block.position.x / cur_shape.cellsize - grid_offset.x][block.position.y / cur_shape.cellsize - grid_offset.y] = block
 		cur_shape.remove_child(block)
 		self.get_node("Blocks").add_child(block)
+		block.get_node("ParticlesPlaced").emitting = true
 	remove_shape()
 	if !gameover:
 		spawn_shape(false)
