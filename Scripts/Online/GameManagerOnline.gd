@@ -12,7 +12,7 @@ var blocksPath = [
 
 var points
 
-var grid_offset:Vector2 = Vector2(19,4)
+var grid_offset:Vector2 = Vector2(3,2)
 var rng = RandomNumberGenerator.new()
 var shape_bag = []
 var shape_bag_index = 0
@@ -195,7 +195,7 @@ func set_display_offset(shape, shape_index):
 
 func add_points(points_to_add):
 	points += points_to_add
-	self.get_node("Points").text = str(points)
+	#self.get_node("Points").text = str(points)
 
 func refresh_hold_shape():
 	self.get_node("Hold").remove_child(self.get_node("Hold").get_child(0))
@@ -227,7 +227,8 @@ func verify_level_up():
 		set_new_gravity()
 
 func refresh_level_label():
-	self.get_node("Level").text = str(level)
+	#self.get_node("Level").text = str(level)
+	pass
 
 func set_new_gravity():
 	var speed = pow(0.8 - ((level -1) * 0.007), level-1)

@@ -8,9 +8,12 @@ var prev_rotation
 var rotation_index = 0
 var start_pos
 
+var _game_manager
+
 const cellsize = 40
-const _lock_delay = 3 # Number of tick allowed before detecting collision (lock_delay)
-var lock_delay = _lock_delay # Counter for said lock_delay
+const _max_lock_delay_increase = 2
+var lock_delay_counter = 0
+var lock_delay_active = false
 
 var timer:float = 0
 var hold_delay:float = 0.6
@@ -25,13 +28,31 @@ var down_timer_paused
 var ghost_blocks = []
 var ghost_path = "res://Shapes/Ghost.tscn"
 
+# Functions that need delayed executions
+var delayed_functions = {} # function_name : TimeLeft. GDscript
+
 signal shape_stopped
 signal hold_shape
 
 func _ready():
+	_game_manager = get_parent()
 	pass
 
+func game_loaded():
+	pass
+
+func _physics_process(delta):
+	for function_name in delayed_functions:
+		var time_left = delayed_functions[function_name] - delta * 1000 # Ms
+		if (time_left <= 0):
+			call(function_name)
+			delayed_functions.erase(function_name)
+		else:
+			delayed_functions[function_name] = time_left
+
 func _process(delta):
+	if Input.is_action_just_pressed("multiplayer"):
+		get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
 	if Input.is_action_just_pressed("ui_up"):
 		rotate()
 	
@@ -92,7 +113,6 @@ func rotate():
 		prev_rotation = rotation_matrix.size() - 1
 	var rotation_vectors = rotation_matrix[rotation_index]
 	
-	# Debut de la marde, de la grosse marde
 	var next_positions = []
 	
 	var _i = 0
@@ -110,6 +130,11 @@ func rotate():
 		prev_rotation = rotation_index
 		rotation_index += 1
 		move_ghost()
+
+		if (lock_delay_active):
+			if (lock_delay_counter <= _max_lock_delay_increase):
+				edit_delayed_function("stop_shape", 1000) # 1s
+				lock_delay_counter += 1
 
 	elif !wall_rotation(next_positions):
 		ground_rotation(next_positions)
@@ -169,13 +194,31 @@ func down():
 				block.transform.origin = newPos
 				_i += 1
 			move_ghost()
-		elif lock_delay != 0:
-			lock_delay -= 1
-		elif lock_delay == 0:
-			lock_delay = _lock_delay
-			emit_signal("shape_stopped")
+			if (lock_delay_active):
+				lock_delay_active = false
+				stop_delayed_function("stop_shape")
+		else:
+			lock_delay_active = true
+			delay_function("stop_shape", 800 - _game_manager.get_timer_time() * 1000) # 800 ms
 	else:
 		emit_signal("shape_stopped")
+
+func stop_shape():
+	lock_delay_active = false
+	lock_delay_counter = 0
+	emit_signal("shape_stopped")
+
+func delay_function(function_name, delayMs):
+	if !delayed_functions.has(function_name):
+		delayed_functions[function_name] = delayMs
+
+func stop_delayed_function(function_name):
+	delayed_functions.erase(function_name)
+
+func edit_delayed_function(function_name, delay_to_add):
+	if delayed_functions.has(function_name):
+		delayed_functions[function_name] += delay_to_add
+
 
 func slide_down(delta):
 	downtimer += delta
@@ -189,7 +232,7 @@ func slide_down(delta):
 
 		if !is_out_of_grid(get_shape_boundairies(next_positions)) && !is_colliding(next_positions):
 			_i = 0
-			get_parent().add_points(1)
+			_game_manager.add_points(1)
 			for block in self.get_children():
 				var newPos = block.transform.origin + Vector2.DOWN*cellsize
 				block.transform.origin = newPos
@@ -226,7 +269,7 @@ func is_out_of_grid(boundaries):
 
 func is_colliding(vectors_list):
 	for vector in vectors_list:
-		if get_parent().grid_cell_is_taken(vector.x, vector.y):
+		if _game_manager.grid_cell_is_taken(vector.x, vector.y):
 			return true
 	return false
 
@@ -284,7 +327,7 @@ func wall_rotation(next_positions):
 func gen_ghost():
 	for block in get_children():
 		var ghost = load(ghost_path).instance()
-		get_parent().get_node("Ghosts").add_child(ghost)
+		_game_manager.get_node("Ghosts").add_child(ghost)
 		ghost.transform.origin = block.transform.origin
 		ghost_blocks.append(ghost)
 	move_ghost()
@@ -316,7 +359,7 @@ func space_bar():
 		var normalized_distance = distance_travelled / cellsize
 		if normalized_distance < lowest_distance_travelled: lowest_distance_travelled = normalized_distance
 		_i += 1
-	get_parent().add_points(lowest_distance_travelled * 2)
+	_game_manager.add_points(lowest_distance_travelled * 2)
 	emit_signal("shape_stopped")
 
 func set_grid_limits(offset):
