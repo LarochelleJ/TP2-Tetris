@@ -12,7 +12,7 @@ var blocksPath = [
 
 var points
 
-var grid_offset:Vector2 = Vector2(3,2)
+var grid_offset:Vector2 = Vector2(12,5)
 var rng = RandomNumberGenerator.new()
 var shape_bag = []
 var shape_bag_index = 0
