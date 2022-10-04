@@ -51,6 +51,8 @@ func _physics_process(delta):
 			delayed_functions[function_name] = time_left
 
 func _process(delta):
+	if Input.is_action_just_pressed("multiplayer"):
+		get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
 	if Input.is_action_just_pressed("ui_up"):
 		rotate()
 	

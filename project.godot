@@ -26,8 +26,8 @@ config/icon="res://icon.png"
 
 [display]
 
-window/size/width=1200
-window/size/height=960
+window/size/width=1920
+window/size/height=1080
 window/size/resizable=false
 window/size/fullscreen=true
 window/stretch/mode="viewport"
@@ -42,6 +42,11 @@ common/drop_mouse_on_gui_input_disabled=true
 hold_key={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":67,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+ ]
+}
+multiplayer={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":77,"unicode":0,"echo":false,"script":null)
  ]
 }
 
