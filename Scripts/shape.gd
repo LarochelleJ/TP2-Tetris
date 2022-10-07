@@ -31,6 +31,12 @@ var ghost_path = "res://Shapes/Ghost.tscn"
 # Functions that need delayed executions
 var delayed_functions = {} # function_name : TimeLeft. GDscript
 
+# Multiplayer variables
+var player_type;
+enum player_types {OneP, TwoP, Lan}
+var isOnline = false;
+var isPaused = false;
+
 signal shape_stopped
 signal hold_shape
 
@@ -51,56 +57,59 @@ func _physics_process(delta):
 			delayed_functions[function_name] = time_left
 
 func _process(delta):
-	if Input.is_action_just_pressed("multiplayer"):
-		get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
-	if Input.is_action_just_pressed("ui_up"):
-		rotate()
-	
-	if Input.is_action_just_pressed("ui_right"):
-		right()
-		cur_direction = direction.Right
-	
-	if Input.is_action_just_pressed("ui_left"):
-		left()
-		cur_direction = direction.Left
+	if (player_type == player_types.OneP):
+		if Input.is_action_just_pressed("multiplayer"):
+			get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
 
-	if Input.is_action_just_released("ui_right"):
-		if (Input.is_action_pressed("ui_left")):
-			cur_direction = direction.Left
-		else:
-			hold_timer = 0
-			timer = 0
-			last_direction = cur_direction
-			cur_direction = direction.None
+		if (!isOnline || isOnline && !isPaused):
+			if Input.is_action_just_pressed("ui_up"):
+				rotate()
+			
+			if Input.is_action_just_pressed("ui_right"):
+				right()
+				cur_direction = direction.Right
+			
+			if Input.is_action_just_pressed("ui_left"):
+				left()
+				cur_direction = direction.Left
 
-	if Input.is_action_just_released("ui_left"):
-		if (Input.is_action_pressed("ui_right")):
-			cur_direction = direction.Right
-		else:
-			hold_timer = 0
-			timer = 0
-			last_direction = cur_direction
-			cur_direction = direction.None
-	
-	if Input.is_action_pressed("ui_down"):
-		down_timer_paused = true
-		slide_down(delta)
-	
-	if Input.is_action_just_released("ui_down"):
-		down_timer_paused = false
-		hold_timer = 0
-		timer = 0
-		cur_direction = direction.None
-	
-	if Input.is_action_just_pressed("ui_accept"):
-		space_bar()
-	
-	if Input.is_action_just_pressed("hold_key"):
-		emit_signal("hold_shape")
+			if Input.is_action_just_released("ui_right"):
+				if (Input.is_action_pressed("ui_left")):
+					cur_direction = direction.Left
+				else:
+					hold_timer = 0
+					timer = 0
+					last_direction = cur_direction
+					cur_direction = direction.None
 
-	if hold_delay < hold_timer:
-		slide(delta)
-	hold_timer += delta
+			if Input.is_action_just_released("ui_left"):
+				if (Input.is_action_pressed("ui_right")):
+					cur_direction = direction.Right
+				else:
+					hold_timer = 0
+					timer = 0
+					last_direction = cur_direction
+					cur_direction = direction.None
+			
+			if Input.is_action_pressed("ui_down"):
+				down_timer_paused = true
+				slide_down(delta)
+			
+			if Input.is_action_just_released("ui_down"):
+				down_timer_paused = false
+				hold_timer = 0
+				timer = 0
+				cur_direction = direction.None
+			
+			if Input.is_action_just_pressed("ui_accept"):
+				space_bar()
+			
+			if Input.is_action_just_pressed("hold_key"):
+				emit_signal("hold_shape")
+
+			if hold_delay < hold_timer:
+				slide(delta)
+			hold_timer += delta
 
 func tick_down():
 	if !down_timer_paused:
@@ -130,6 +139,8 @@ func rotate():
 		prev_rotation = rotation_index
 		rotation_index += 1
 		move_ghost()
+		if (isOnline):
+			_game_manager.client_handler.send_packet("ro|")
 
 		if (lock_delay_active):
 			if (lock_delay_counter <= _max_lock_delay_increase):
@@ -161,6 +172,8 @@ func right():
 			block.transform.origin = newPos
 			_i += 1
 		move_ghost()
+		if (isOnline):
+			_game_manager.client_handler.send_packet("r|")
 
 func left():
 	var _i = 0
@@ -177,6 +190,8 @@ func left():
 			block.transform.origin = newPos
 			_i += 1
 		move_ghost()
+		if (isOnline):
+			_game_manager.client_handler.send_packet("l|")
 
 func down():
 	var _i = 0
@@ -193,6 +208,8 @@ func down():
 				var newPos = block.transform.origin + Vector2.DOWN*cellsize
 				block.transform.origin = newPos
 				_i += 1
+			if (isOnline):
+				_game_manager.client_handler.send_packet("d|")
 			move_ghost()
 			if (lock_delay_active):
 				lock_delay_active = false
@@ -238,6 +255,8 @@ func slide_down(delta):
 				block.transform.origin = newPos
 				_i += 1
 			downtimer = 0
+	if (isOnline):
+		_game_manager.client_handler.send_packet("sd|")
 	move_ghost()
 
 func set_pos(offset):
@@ -245,6 +264,15 @@ func set_pos(offset):
 	for block in self.get_children():
 		block.transform.origin += offset * cellsize
 		_i += 1
+
+func set_online(status):
+	isOnline = status
+
+func set_paused(status):
+	isPaused = status
+
+func set_player_type(type):
+	player_type = type
 
 func get_shape_boundairies(vectors_list):
 	var maxX = 0
@@ -360,6 +388,8 @@ func space_bar():
 		if normalized_distance < lowest_distance_travelled: lowest_distance_travelled = normalized_distance
 		_i += 1
 	_game_manager.add_points(lowest_distance_travelled * 2)
+	if (isOnline):
+		_game_manager.client_handler.send_packet("sb|")
 	emit_signal("shape_stopped")
 
 func set_grid_limits(offset):

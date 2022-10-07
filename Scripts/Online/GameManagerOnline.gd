@@ -26,6 +26,10 @@ var level = 0
 var lines_cleared = 0
 var gameover = false
 
+# Online variables
+var game_active = false
+var client_handler
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	points = 0
@@ -80,8 +84,11 @@ func spawn_shape(shape_type):
 	shape.connect("shape_stopped", self, "_on_shape_stopped")
 	shape.connect("hold_shape", self, "_on_hold_shape")
 	shape.set_pos(starting_pos + grid_offset)
+	shape.set_online(true);
+	shape.set_player_type(shape.player_types.OneP)
 	shape.set_grid_limits(grid_offset)
 	self.add_child(shape)
+	client_handler.send_packet(str("p|", cur_shape.type))
 	shape.gen_ghost()
 	refresh_next_shape()
 	if cur_shape.current_pos_is_colliding():

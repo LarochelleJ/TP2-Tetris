@@ -12,10 +12,10 @@ var blocksPath = [
 
 var points
 
-var grid_offset:Vector2 = Vector2(19,4)
+var grid_offset:Vector2 = Vector2(33,5)
 var rng = RandomNumberGenerator.new()
 var shape_bag = []
-var shape_bag_index = 0
+var shape_bag_index = 1
 var hold_shape = -1
 var can_hold_shape = true
 var cur_shape
@@ -26,16 +26,16 @@ var level = 0
 var lines_cleared = 0
 var gameover = false
 
+# Online variables
+var game_active = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	points = 0
 	level = 1
 	refresh_level_label()
-	print("speed ", set_new_gravity())
 	gen_grid_array()
 	rng.randomize()
-	gen_shape_bag()
-	spawn_shape(false)
 
 func _process(delta):
 	pass
@@ -59,6 +59,9 @@ func gen_shape_bag():
 			shape_bag.append(random)
 
 func spawn_shape(shape_type):
+	if (cur_shape != null):
+		remove_shape()
+		
 	can_hold_shape = true;
 	var blockpath
 	if !shape_type && typeof(shape_type) == TYPE_BOOL: # If no shape_type is specified, we use one from our generated bag
@@ -81,10 +84,9 @@ func spawn_shape(shape_type):
 	shape.connect("hold_shape", self, "_on_hold_shape")
 	shape.set_pos(starting_pos + grid_offset)
 	shape.set_grid_limits(grid_offset)
-	shape.set_player_type(shape.player_types.OneP)
+	shape.set_player_type(shape.player_types.Lan)
 	self.add_child(shape)
 	shape.gen_ghost()
-	refresh_next_shape()
 	if cur_shape.current_pos_is_colliding():
 		game_over()
 
@@ -95,14 +97,18 @@ func _on_shape_stopped():
 		self.get_node("Blocks").add_child(block)
 		block.get_node("ParticlesPlaced").emitting = true
 	remove_shape()
-	if !gameover:
-		spawn_shape(false)
+
+	#We let the server do the spawn
+	#if !gameover:
+	#	spawn_shape(false)
+
 	
 func remove_shape():
 	self.remove_child(cur_shape)
 	remove_ghosts()
 	verify_full_rows()
 	verify_level_up()
+	cur_shape = null
 	
 func grid_cell_is_taken(x, y):
 	x = x / cur_shape.cellsize - grid_offset.x
@@ -175,12 +181,6 @@ func game_over():
 	gameover = true
 	self.get_node("Points").text = "YOU LOST"
 
-func refresh_next_shape():
-	self.get_node("NextShape").remove_child(self.get_node("NextShape").get_child(0))
-	var next_shape = load(blocksPath[shape_bag[shape_bag_index]]).instance()
-	next_shape.set_script(null)
-	set_display_offset(next_shape, shape_bag[shape_bag_index])
-	self.get_node("NextShape").add_child(next_shape)
 
 func set_display_offset(shape, shape_index):
 	var offset_vector
@@ -196,7 +196,7 @@ func set_display_offset(shape, shape_index):
 
 func add_points(points_to_add):
 	points += points_to_add
-	self.get_node("Points").text = str(points)
+	#self.get_node("Points").text = str(points)
 
 func refresh_hold_shape():
 	self.get_node("Hold").remove_child(self.get_node("Hold").get_child(0))
@@ -225,14 +225,10 @@ func verify_level_up():
 		level += 1
 		lines_cleared = lines_cleared - 10
 		refresh_level_label()
-		set_new_gravity()
 
 func refresh_level_label():
-	self.get_node("Level").text = str(level)
-
-func set_new_gravity():
-	var speed = pow(0.8 - ((level -1) * 0.007), level-1)
-	self.get_node("TickSpeed").wait_time = speed
+	#self.get_node("Level").text = str(level)
+	pass
 
 func get_timer_time():
 	return self.get_node("TickSpeed").wait_time;
