@@ -26,8 +26,10 @@ var level = 0
 var lines_cleared = 0
 var gameover = false
 
+onready var timer = self.get_node("TickSpeed")
+
 # Online variables
-var game_active = false
+var isPaused = true;
 var client_handler
 
 # Called when the node enters the scene tree for the first time.
@@ -202,7 +204,8 @@ func set_display_offset(shape, shape_index):
 
 func add_points(points_to_add):
 	points += points_to_add
-	#self.get_node("Points").text = str(points)
+	client_handler.send_packet(str("po|", points))
+	self.get_node("Points").text = str(points)
 
 func refresh_hold_shape():
 	self.get_node("Hold").remove_child(self.get_node("Hold").get_child(0))
@@ -234,15 +237,18 @@ func verify_level_up():
 		set_new_gravity()
 
 func refresh_level_label():
-	#self.get_node("Level").text = str(level)
+	self.get_node("Level").text = str(level)
 	pass
 
 func set_new_gravity():
 	var speed = pow(0.8 - ((level -1) * 0.007), level-1)
-	self.get_node("TickSpeed").wait_time = speed
+	timer.wait_time = speed
 
 func get_timer_time():
-	return self.get_node("TickSpeed").wait_time;
+	return timer.wait_time;
 
 func _on_TickSpeed_timeout():
 	cur_shape.tick_down()
+
+func set_status_message(message):
+	self.get_node("Status_Label").text = message

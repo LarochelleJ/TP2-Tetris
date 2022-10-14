@@ -35,7 +35,6 @@ var delayed_functions = {} # function_name : TimeLeft. GDscript
 var player_type;
 enum player_types {OneP, TwoP, Lan}
 var isOnline = false;
-var isPaused = false;
 
 signal shape_stopped
 signal hold_shape
@@ -61,7 +60,7 @@ func _process(delta):
 		if Input.is_action_just_pressed("multiplayer"):
 			get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
 
-		if (!isOnline || isOnline && !isPaused):
+		if (!isOnline || isOnline && !_game_manager.isPaused):
 			if Input.is_action_just_pressed("ui_up"):
 				rotate()
 			
@@ -112,10 +111,13 @@ func _process(delta):
 			hold_timer += delta
 
 func tick_down():
-	if !down_timer_paused:
+	if !down_timer_paused && player_type != player_types.Lan:
 		down()
 
 func rotate():
+	if (isOnline):
+		_game_manager.client_handler.send_packet("ro|")
+
 	if rotation_index == rotation_matrix.size():
 		rotation_index = 0
 	if rotation_index == 0:
@@ -139,8 +141,6 @@ func rotate():
 		prev_rotation = rotation_index
 		rotation_index += 1
 		move_ghost()
-		if (isOnline):
-			_game_manager.client_handler.send_packet("ro|")
 
 		if (lock_delay_active):
 			if (lock_delay_counter <= _max_lock_delay_increase):
@@ -193,7 +193,9 @@ func left():
 		if (isOnline):
 			_game_manager.client_handler.send_packet("l|")
 
-func down():
+func down(timer_time = -1):
+	if (isOnline):
+		_game_manager.client_handler.send_packet(str("d|", _game_manager.get_timer_time()))
 	var _i = 0
 	var next_positions = []
 	for block in self.get_children():
@@ -208,17 +210,19 @@ func down():
 				var newPos = block.transform.origin + Vector2.DOWN*cellsize
 				block.transform.origin = newPos
 				_i += 1
-			if (isOnline):
-				_game_manager.client_handler.send_packet("d|")
 			move_ghost()
 			if (lock_delay_active):
 				lock_delay_active = false
 				stop_delayed_function("stop_shape")
 		else:
 			lock_delay_active = true
-			delay_function("stop_shape", 800 - _game_manager.get_timer_time() * 1000) # 800 ms
+			if timer_time == -1:
+				delay_function("stop_shape", 800 - _game_manager.get_timer_time() * 1000) # 800 ms
+			else: # LAN player
+				delay_function("stop_shape", 800 - timer_time * 1000)
 	else:
 		emit_signal("shape_stopped")
+
 
 func stop_shape():
 	lock_delay_active = false
@@ -255,9 +259,9 @@ func slide_down(delta):
 				block.transform.origin = newPos
 				_i += 1
 			downtimer = 0
-	if (isOnline):
-		_game_manager.client_handler.send_packet("sd|")
-	move_ghost()
+		if (isOnline):
+			_game_manager.client_handler.send_packet("sd|")
+		move_ghost()
 
 func set_pos(offset):
 	var _i = 0
@@ -267,9 +271,6 @@ func set_pos(offset):
 
 func set_online(status):
 	isOnline = status
-
-func set_paused(status):
-	isPaused = status
 
 func set_player_type(type):
 	player_type = type
@@ -321,6 +322,7 @@ func ground_rotation(next_positions):
 				_i += 1
 			prev_rotation = rotation_index
 			rotation_index += 1
+			move_ghost()
 			return true
 		else:
 			decalage *= 2
@@ -347,6 +349,7 @@ func wall_rotation(next_positions):
 					_i += 1
 				prev_rotation = rotation_index
 				rotation_index += 1
+				move_ghost()
 				return true
 			else:
 				decalage *= 2

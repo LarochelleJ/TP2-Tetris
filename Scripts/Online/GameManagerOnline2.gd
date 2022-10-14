@@ -60,7 +60,7 @@ func gen_shape_bag():
 
 func spawn_shape(shape_type):
 	if (cur_shape != null):
-		remove_shape()
+		remove_shape() # Will cause issues when latency will fluctuate (LAN), shape might get removed before it transform into "blocks", thus disrupting the lines
 		
 	can_hold_shape = true;
 	var blockpath
@@ -198,6 +198,9 @@ func add_points(points_to_add):
 	points += points_to_add
 	#self.get_node("Points").text = str(points)
 
+func refresh_points(points):
+	self.get_node("Points").text = points
+
 func refresh_hold_shape():
 	self.get_node("Hold").remove_child(self.get_node("Hold").get_child(0))
 	var shape = load(blocksPath[hold_shape]).instance()
@@ -227,7 +230,7 @@ func verify_level_up():
 		refresh_level_label()
 
 func refresh_level_label():
-	#self.get_node("Level").text = str(level)
+	self.get_node("Level").text = str(level)
 	pass
 
 func get_timer_time():

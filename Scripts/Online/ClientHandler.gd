@@ -1,6 +1,6 @@
 extends Node
 
-const HOST: String = "127.0.0.1"
+const HOST: String = "192.168.0.103"
 const PORT: int = 2121
 const RECONNECT_TIMEOUT: float = 3.0
 
@@ -27,7 +27,6 @@ func _connect_after_timeout(timeout: float) -> void:
 
 func _handle_client_connected() -> void:
 	print("Client connected to server.")
-	send_packet(str("p|", _game_manager.cur_shape.type))
 
 func _handle_client_data(data: PoolByteArray) -> void:
 	for packet in filter_with_custom_codec(data):
@@ -46,29 +45,43 @@ func _handle_client_error() -> void:
 func parse_packet(packet):
 	var args = packet.split("|")
 	if (len(args) > 0):
+		if (_game_manager_opponent.cur_shape != null):
+		# Packet that require an active ShapeX to work
+			match (args[0]):
+				"r":
+					_game_manager_opponent.cur_shape.right()
+					_game_manager_opponent.cur_shape.cur_direction = _game_manager_opponent.cur_shape.direction.Right
+				"l":
+					_game_manager_opponent.cur_shape.left()
+					_game_manager_opponent.cur_shape.cur_direction = _game_manager_opponent.cur_shape.direction.Left
+				"ro":
+					_game_manager_opponent.cur_shape.rotate()
+				"d":
+					var timer_time = float(args[1])
+					_game_manager_opponent.cur_shape.down(timer_time)
+				"sd":
+					_game_manager_opponent.cur_shape.slide_down(9999) #Bypass timer
+				"sb":
+					_game_manager_opponent.cur_shape.space_bar()
+				_:
+					pass
+		
+		# Packets that doesnt work with ShapeX
 		match (args[0]):
-			"r":
-				_game_manager_opponent.cur_shape.right()
-			"l":
-				_game_manager_opponent.cur_shape.left()
-			"ro":
-				_game_manager_opponent.cur_shape.rotate()
-			"d":
-				_game_manager_opponent.cur_shape.down()
-			"sd":
-				_game_manager_opponent.cur_shape.slide_down(9999) #Bypass timer
-			"sb":
-				_game_manager_opponent.cur_shape.space_bar()
 			"p":
 				_game_manager_opponent.spawn_shape(int(args[1]))
-			"sba":
-				var temp = args[1].split(",")
-				var shape_bag_array = []
-				for i in temp:
-					shape_bag_array.append(int(i))
-				_game_manager_opponent.shape_bag = shape_bag_array
+			"po":
+				_game_manager_opponent.refresh_points(args[1])
+			"start":
+				_game_manager.isPaused = false
+				_game_manager.timer.start()
+			"ready":
+				send_packet(str("ready|", _game_manager.cur_shape.type))
+			"ts":
+				_game_manager.set_status_message(args[1])
 			_:
 				pass
+
 
 func send_packet(packet):
 	var formated_packet = packet.to_utf8() + PoolByteArray([10]) # We terminate the message with 0x0A

@@ -145,4 +145,14 @@ align = 2
 [node name="Ghosts" type="Node2D" parent="Opponent"]
 position = Vector2( 1, -1 )
 
+[node name="Status_Label" type="Label" parent="."]
+margin_left = 925.0
+margin_top = 133.0
+margin_right = 1282.0
+margin_bottom = 298.0
+rect_pivot_offset = Vector2( -160, 200 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_fonts/font = SubResource( 1 )
+autowrap = true
+
 [connection signal="timeout" from="TickSpeed" to="." method="_on_TickSpeed_timeout"]
