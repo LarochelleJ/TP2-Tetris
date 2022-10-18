@@ -81,6 +81,7 @@ func spawn_shape(shape_type):
 	shape.connect("hold_shape", self, "_on_hold_shape")
 	shape.set_pos(starting_pos + grid_offset)
 	shape.set_grid_limits(grid_offset)
+	shape.set_player_type(shape.player_types.OneP)
 	self.add_child(shape)
 	shape.gen_ghost()
 	refresh_next_shape()
