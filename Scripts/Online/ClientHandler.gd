@@ -81,9 +81,10 @@ func parse_packet(packet):
 				_game_manager.set_status_message(args[1])
 			"username":
 				_game_manager_opponent.set_name(args[1])
+			"best":
+				_game_manager_opponent.set_best(args[1], args[2])
 			_:
 				pass
-
 
 func send_packet(packet):
 	var formated_packet = packet.to_utf8() + PoolByteArray([10]) # We terminate the message with 0x0A

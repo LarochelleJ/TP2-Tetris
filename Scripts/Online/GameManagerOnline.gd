@@ -37,6 +37,7 @@ func _ready():
 	points = 0
 	level = 1
 	refresh_level_label()
+	get_username()
 	print("speed ", set_new_gravity())
 	gen_grid_array()
 	rng.randomize()
@@ -255,3 +256,7 @@ func set_status_message(message):
 
 func get_username():
 	get_node("LocalUsername").text = GlobalVariables.local_username
+
+func set_best(bestname, bestscore):
+	get_node("BestPlayer").text = bestname
+	get_node("BestScore").text = bestscore
