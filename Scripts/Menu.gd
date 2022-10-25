@@ -6,6 +6,8 @@ func _ready():
 	load_animation()
 	get_username()
 	play_animation()
+	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
+	$HTTPRequest.request("https://larochellej.com/ip_tetris.json")
 
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -37,3 +39,9 @@ func get_username():
 
 func play_animation():
 	get_node("SelectionMenu/MenuLoad").play("MenuLoad")
+
+func _on_request_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	if typeof(json.result) == TYPE_ARRAY:
+		GlobalVariables.server_ip = json.result[0]
+	print("Server ip: ", GlobalVariables.server_ip)

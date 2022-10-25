@@ -233,5 +233,7 @@ valign = 1
 root_node = NodePath("../..")
 anims/MenuLoad = SubResource( 6 )
 
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
 [connection signal="pressed" from="SelectionMenu/1P" to="." method="_on_1P_pressed"]
 [connection signal="pressed" from="SelectionMenu/LAN" to="." method="_on_LAN_pressed"]

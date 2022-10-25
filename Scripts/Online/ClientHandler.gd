@@ -1,6 +1,6 @@
 extends Node
 
-const HOST: String = "192.168.0.1"
+var HOST: String = GlobalVariables.server_ip
 const PORT: int = 2121
 const RECONNECT_TIMEOUT: float = 3.0
 
