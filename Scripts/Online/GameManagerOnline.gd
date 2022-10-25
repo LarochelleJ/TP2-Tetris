@@ -252,3 +252,6 @@ func _on_TickSpeed_timeout():
 
 func set_status_message(message):
 	self.get_node("Status_Label").text = message
+
+func get_username():
+	get_node("LocalUsername").text = GlobalVariables.local_username

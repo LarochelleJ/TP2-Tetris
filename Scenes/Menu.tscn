@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://fonts/PublicPixel-z84yD.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://fonts/texgyreadventor-bold.otf" type="DynamicFontData" id=2]
@@ -21,6 +21,10 @@ shadow_size = 40
 
 [sub_resource type="DynamicFont" id=4]
 size = 90
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 30
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=5]
@@ -179,6 +183,28 @@ margin_bottom = 360.0
 rect_pivot_offset = Vector2( 420, 180 )
 custom_fonts/font = SubResource( 4 )
 text = "TETRIS"
+align = 1
+valign = 1
+
+[node name="Title2" type="Label" parent="SelectionMenu"]
+margin_left = 870.0
+margin_top = 810.0
+margin_right = 1053.0
+margin_bottom = 870.0
+rect_pivot_offset = Vector2( 420, 180 )
+custom_fonts/font = SubResource( 7 )
+text = "USER"
+align = 1
+valign = 1
+
+[node name="Username" type="Label" parent="SelectionMenu"]
+margin_left = 870.0
+margin_top = 870.0
+margin_right = 1053.0
+margin_bottom = 930.0
+rect_pivot_offset = Vector2( 420, 180 )
+custom_fonts/font = SubResource( 7 )
+text = "-"
 align = 1
 valign = 1
 

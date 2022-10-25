@@ -24,6 +24,10 @@ config/name="TetrisTest"
 run/main_scene="res://Scenes/Menu.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+GlobalVariables="*res://Scripts/GlobalVariables.gd"
+
 [display]
 
 window/size/width=1920

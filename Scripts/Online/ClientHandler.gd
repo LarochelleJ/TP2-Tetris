@@ -1,6 +1,6 @@
 extends Node
 
-const HOST: String = "192.168.0.103"
+const HOST: String = "192.168.0.104"
 const PORT: int = 2121
 const RECONNECT_TIMEOUT: float = 3.0
 
@@ -76,9 +76,11 @@ func parse_packet(packet):
 				_game_manager.isPaused = false
 				_game_manager.timer.start()
 			"ready":
-				send_packet(str("ready|", _game_manager.cur_shape.type))
+				send_packet(str("ready|", _game_manager.cur_shape.type, "|", GlobalVariables.local_username))
 			"ts":
 				_game_manager.set_status_message(args[1])
+			"username":
+				_game_manager_opponent.set_name(args[1])
 			_:
 				pass
 

@@ -238,3 +238,6 @@ func get_timer_time():
 
 func _on_TickSpeed_timeout():
 	cur_shape.tick_down()
+
+func set_name(username):
+	get_parent().get_node("Player2Username").text = username
