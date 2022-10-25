@@ -41,7 +41,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 2 ),
+"times": PoolRealArray( 0, 1 ),
 "transitions": PoolRealArray( -10, 1 ),
 "update": 0,
 "values": [ Vector2( -270, 420 ), Vector2( 690, 420 ) ]
@@ -53,7 +53,7 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 2 ),
+"times": PoolRealArray( 0, 1 ),
 "transitions": PoolRealArray( -10, 1 ),
 "update": 0,
 "values": [ Vector2( 1950, 420 ), Vector2( 990, 420 ) ]
@@ -65,7 +65,7 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 2 ),
+"times": PoolRealArray( 0, 1 ),
 "transitions": PoolRealArray( -12, 1 ),
 "update": 0,
 "values": [ Vector2( 690, 1110 ), Vector2( 690, 600 ) ]
@@ -107,9 +107,9 @@ margin_right = 1920.0
 margin_bottom = 1080.0
 
 [node name="1P" type="Button" parent="SelectionMenu"]
-margin_left = 690.0
+margin_left = -270.0
 margin_top = 420.0
-margin_right = 930.0
+margin_right = -30.0
 margin_bottom = 540.0
 custom_colors/font_color_disabled = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color_focus = Color( 0.145098, 0.145098, 0.164706, 1 )
@@ -124,9 +124,9 @@ custom_styles/normal = SubResource( 2 )
 text = "1P"
 
 [node name="2P" type="Button" parent="SelectionMenu"]
-margin_left = 990.0
+margin_left = 1950.0
 margin_top = 420.0
-margin_right = 1230.01
+margin_right = 2190.01
 margin_bottom = 540.0
 custom_colors/font_color_disabled = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color_focus = Color( 0.145098, 0.145098, 0.164706, 1 )
@@ -142,9 +142,9 @@ text = "2P"
 
 [node name="LAN" type="Button" parent="SelectionMenu"]
 margin_left = 690.0
-margin_top = 600.0
+margin_top = 1110.0
 margin_right = 1230.0
-margin_bottom = 720.0
+margin_bottom = 1230.0
 custom_colors/font_color_disabled = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color_focus = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color = Color( 0.145098, 0.145098, 0.164706, 1 )
@@ -160,9 +160,9 @@ text = "LAN"
 [node name="Multi LAN2" type="Button" parent="SelectionMenu"]
 visible = false
 margin_left = 690.0
-margin_top = 780.0
+margin_top = 1290.0
 margin_right = 1230.0
-margin_bottom = 900.0
+margin_bottom = 1410.0
 custom_colors/font_color_disabled = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color_focus = Color( 0.145098, 0.145098, 0.164706, 1 )
 custom_colors/font_color = Color( 0.145098, 0.145098, 0.164706, 1 )
@@ -177,9 +177,8 @@ text = "Settings"
 
 [node name="Title" type="Label" parent="SelectionMenu"]
 margin_left = 690.0
-margin_top = 180.0
+margin_top = -180.0
 margin_right = 1230.0
-margin_bottom = 360.0
 rect_pivot_offset = Vector2( 420, 180 )
 custom_fonts/font = SubResource( 4 )
 text = "TETRIS"
@@ -233,16 +232,6 @@ valign = 1
 [node name="MenuLoad" type="AnimationPlayer" parent="SelectionMenu"]
 root_node = NodePath("../..")
 anims/MenuLoad = SubResource( 6 )
-
-[node name="Tween" type="Tween" parent="."]
-
-[node name="Container" type="Container" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-
-[node name="1PMenu" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
 
 [connection signal="pressed" from="SelectionMenu/1P" to="." method="_on_1P_pressed"]
 [connection signal="pressed" from="SelectionMenu/LAN" to="." method="_on_LAN_pressed"]

@@ -5,6 +5,7 @@ extends Node2D
 func _ready():
 	load_animation()
 	get_username()
+	play_animation()
 
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -33,3 +34,6 @@ func get_username():
 		username = "Guest"
 	get_node("SelectionMenu/Username").text = username
 	GlobalVariables.local_username = username
+
+func play_animation():
+	get_node("SelectionMenu/MenuLoad").play("MenuLoad")

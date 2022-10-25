@@ -179,7 +179,6 @@ func remove_ghosts():
 
 func game_over():
 	gameover = true
-	self.get_node("Points").text = "YOU LOST"
 
 
 func set_display_offset(shape, shape_index):

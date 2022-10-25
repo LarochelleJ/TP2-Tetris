@@ -38,6 +38,8 @@ func _ready():
 	spawn_shape(false)
 
 func _process(delta):
+	if Input.is_action_just_pressed("ui_cancel"):
+		get_tree().change_scene("res://Scenes/Menu.tscn")
 	pass
 
 func gen_grid_array():
