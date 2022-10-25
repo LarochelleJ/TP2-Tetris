@@ -56,10 +56,10 @@ func _physics_process(delta):
 			delayed_functions[function_name] = time_left
 
 func _process(delta):
-	if (player_type == player_types.OneP):
-		if Input.is_action_just_pressed("multiplayer"):
-			get_tree().change_scene("res://Scenes/TetrisGameOnline.tscn")
+	if Input.is_action_just_pressed("ui_cancel"):
+		get_tree().change_scene("res://Scenes/Menu.tscn")
 
+	if (player_type == player_types.OneP):
 		if (!isOnline || isOnline && !_game_manager.isPaused):
 			if Input.is_action_just_pressed("ui_up"):
 				rotate()
