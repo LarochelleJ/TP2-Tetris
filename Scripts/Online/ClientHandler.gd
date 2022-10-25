@@ -83,6 +83,8 @@ func parse_packet(packet):
 				_game_manager_opponent.set_name(args[1])
 			"best":
 				_game_manager.set_best(args[1], args[2])
+			"win":
+				_game_manager.set_endgame(args[1])
 			_:
 				pass
 

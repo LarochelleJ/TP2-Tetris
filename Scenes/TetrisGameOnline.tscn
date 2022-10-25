@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Scripts/Online/GameManagerOnline2.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/KittyTheme.tres" type="TileSet" id=2]
 [ext_resource path="res://fonts/PublicPixel-z84yD.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://Scripts/Online/ClientHandler.gd" type="Script" id=4]
 [ext_resource path="res://Scripts/Online/GameManagerOnline.gd" type="Script" id=5]
+[ext_resource path="res://fonts/texgyreadventor-bold.otf" type="DynamicFontData" id=6]
 
 [sub_resource type="DynamicFont" id=1]
 size = 25
@@ -18,6 +19,10 @@ font_data = ExtResource( 3 )
 [sub_resource type="DynamicFont" id=3]
 size = 20
 font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 90
+font_data = ExtResource( 6 )
 
 [node name="TetrisGameOnline" type="Node2D"]
 position = Vector2( 1, 0 )
@@ -222,5 +227,36 @@ rect_pivot_offset = Vector2( -160, 200 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 1 )
 autowrap = true
+
+[node name="GameEnd" type="Node2D" parent="."]
+visible = false
+position = Vector2( -41, -40 )
+
+[node name="LoseWinPanel" type="Panel" parent="GameEnd"]
+modulate = Color( 1, 1, 1, 0.690196 )
+margin_right = 2000.0
+margin_bottom = 1160.0
+
+[node name="LEFT" type="Label" parent="GameEnd"]
+margin_left = 520.0
+margin_top = 160.0
+margin_right = 920.0
+margin_bottom = 1040.0
+custom_colors/font_color_shadow = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "-"
+align = 1
+valign = 1
+
+[node name="RIGHT" type="Label" parent="GameEnd"]
+margin_left = 1360.0
+margin_top = 160.0
+margin_right = 1760.0
+margin_bottom = 1040.0
+custom_colors/font_color_shadow = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "-"
+align = 1
+valign = 1
 
 [connection signal="timeout" from="TickSpeed" to="." method="_on_TickSpeed_timeout"]

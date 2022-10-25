@@ -182,7 +182,7 @@ func remove_ghosts():
 
 func game_over():
 	gameover = true
-	self.get_node("Points").text = "YOU LOST"
+	client_handler.send_packet("dead|")
 
 func refresh_next_shape():
 	self.get_node("NextShape").remove_child(self.get_node("NextShape").get_child(0))
@@ -260,3 +260,16 @@ func get_username():
 func set_best(bestname, bestscore):
 	get_node("BestPlayer").text = bestname
 	get_node("BestScore").text = bestscore
+
+func set_endgame(win):
+	var local_player_text
+	var online_player_text
+	if win == "0":
+		local_player_text = "LOST!"
+		online_player_text = "WIN!"
+	else:
+		local_player_text = "WIN!"
+		online_player_text = "LOST!"
+	get_node("GameEnd/LEFT").text = local_player_text
+	get_node("GameEnd/RIGHT").text = online_player_text
+	get_node("GameEnd").visible = true
